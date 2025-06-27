@@ -82,3 +82,42 @@ Authorization: Bearer 27fe2a5d-f3aa-4d37-818e-533d0a2ea2a7
   
 }
 
+
+# product api start here
+
+
+### get product by id
+GET {{rootUrl}}/api/v1/product/ID/6854b7429c82011e4617b0c3
+
+# get products by id ends here
+
+# get all start here products
+###
+GET {{rootUrl}}/api/v1/product
+# get all products ends ends here 
+
+
+# get products by category starts here
+
+###
+GET {{rootUrl}}/api/v1/product/category/6852d676b36312da490d66f0
+
+# get products by category ends here
+
+# product api ends here 
+
+# category apis start here
+###get all category
+GET {{rootUrl}}/api/v1/category
+
+###get category by slug
+
+GET {{rootUrl}}/api/v1/category/slug/mens
+
+###get category by id
+GET {{rootUrl}}/api/v1/category/Id/6852d585b36312da490d66ea
+
+
+
+# category apis ends here
+

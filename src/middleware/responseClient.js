@@ -5,6 +5,7 @@ export const responseClient = ({
   statusCode = 200,
   payload,
 }) => {
+  console.log("hello response handler");
   //Success response
   req.success = () => {
     return res.status(statusCode).json({
