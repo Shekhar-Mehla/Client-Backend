@@ -99,6 +99,7 @@ export const getAllFilterProductsController = async (req, res, next) => {
     const { mainCategory, maxPrice, minPrice, colors, sale } = req.query;
 
     const filter = {};
+    console.log(mainCategory);
 
     // if (req.params.productPath !== "all") {
     //   const productPaths = req.params.productPath.split(",");
@@ -106,13 +107,13 @@ export const getAllFilterProductsController = async (req, res, next) => {
     //     filter.$or = createRegexFilter(productPaths);
     //   }
     // }
-    if (mainCategory?.length > 0) {
+    if (mainCategory) {
       filter.mainCategory = mainCategory.includes(",")
         ? { $in: mainCategory.split(",") }
         : mainCategory;
     }
     if (minPrice && maxPrice) {
-      filter.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+      filter.price = { $gte: minPrice, $lte: maxPrice };
     }
     if (colors) {
       filter.colors = colors.includes(",")
@@ -122,9 +123,9 @@ export const getAllFilterProductsController = async (req, res, next) => {
     if (sale === "true") {
       filter.sale = sale;
     }
-
+    console.log(filter);
     const products = await getAllProductsByPath(filter);
-    console.log(products.length);
+    console.log(products);
     products?.length > 0 && Array.isArray(products)
       ? responseClient({
           payload: products,
@@ -136,7 +137,6 @@ export const getAllFilterProductsController = async (req, res, next) => {
           message: "No products found",
           req,
           res,
-          statusCode: 401,
         });
   } catch (error) {
     next(error);
