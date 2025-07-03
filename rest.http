@@ -106,6 +106,9 @@ GET {{rootUrl}}/api/v1/product/category/6852d676b36312da490d66f0
 
 # product api ends here 
 
+####
+GET {{rootUrl}}/api/v1/product/filterProduct?categories=men&colors=White,Grey
+
 # category apis start here
 ###get all category
 GET {{rootUrl}}/api/v1/category

@@ -1,9 +1,11 @@
 import { responseClient } from "../middleware/responseClient.js";
 import {
   getAllProducts,
+  getAllProductsByPath,
   getProductById,
   getProductsByCategoryId,
 } from "../models/Product/ProductModel.js";
+// import { createRegexFilter } from "../utils/createRegexFilter.js";
 
 //
 export const getProductsByCategoryIdController = async (req, res, next) => {
@@ -88,6 +90,54 @@ export const getAllProductsController = async (req, res, next) => {
         req,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+export const getAllFilterProductsController = async (req, res, next) => {
+  try {
+    const { mainCategory, maxPrice, minPrice, colors, sale } = req.query;
+
+    const filter = {};
+
+    // if (req.params.productPath !== "all") {
+    //   const productPaths = req.params.productPath.split(",");
+    //   if (productPaths.length > 0) {
+    //     filter.$or = createRegexFilter(productPaths);
+    //   }
+    // }
+    if (mainCategory?.length > 0) {
+      filter.mainCategory = mainCategory.includes(",")
+        ? { $in: mainCategory.split(",") }
+        : mainCategory;
+    }
+    if (minPrice && maxPrice) {
+      filter.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+    }
+    if (colors) {
+      filter.colors = colors.includes(",")
+        ? { $in: colors.split(",") }
+        : colors;
+    }
+    if (sale === "true") {
+      filter.sale = sale;
+    }
+
+    const products = await getAllProductsByPath(filter);
+    console.log(products.length);
+    products?.length > 0 && Array.isArray(products)
+      ? responseClient({
+          payload: products,
+          message: products.length ? "Filtered products" : "No products found",
+          req,
+          res,
+        })
+      : responseClient({
+          message: "No products found",
+          req,
+          res,
+          statusCode: 401,
+        });
   } catch (error) {
     next(error);
   }

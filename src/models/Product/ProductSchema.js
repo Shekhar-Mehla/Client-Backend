@@ -14,6 +14,9 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    sale: { type: Boolean, default: false },
+    mainCategory: { type: String, required: true },
+
     productPath: { type: String, required: true, index: true },
     stock: Number,
     sizes: [String],
