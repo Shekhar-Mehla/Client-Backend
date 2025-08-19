@@ -38,7 +38,7 @@ app.use(
 );
 
 app.use(morgan("dev"));
-// app.use(express.json());
+app.use(express.json());
 
 //API endpoints
 app.use("/api/v1/auth", authRoute);
