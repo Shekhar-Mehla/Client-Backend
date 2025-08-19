@@ -4,6 +4,7 @@ import morgan from "morgan";
 import "dotenv/config";
 import dbConnect from "./src/config/dbconfig.js";
 import { responseClient } from "./src/middleware/responseClient.js";
+import chatRouter from "./src/routes/chat.js";
 import { errorHandler } from "./src/middleware/errorHandler.js";
 import authRoute from "./src/routes/authRoute.js";
 import imageRoutes from "./src/routes/imageRoute.js";
@@ -46,6 +47,8 @@ app.use("/api/v1/product", productRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/payment", stripeRouter);
 app.use("/api/v1/reviews", reviewRouter);
+// chat router
+app.use("/api/v1/user", chatRouter);
 
 //end poins for image
 app.use("/api/v1/all", imageRoutes);
