@@ -1200,7 +1200,6 @@ const LAMBDA = 0.1; // Decay rate
 // };
 
 export const getRecomendationController = async (req, res, next) => {
-  console.log(req.params, "params");
   try {
     const { userId, interactionId } = req.query;
     // step 1 get all the interaction based on userId and itneration ID
@@ -1235,7 +1234,7 @@ export const getRecomendationController = async (req, res, next) => {
         ),
       ].map((idStr) => new mongoose.Types.ObjectId(idStr));
 
-      console.log(uniqueProductIds.length, "productId lenght");
+     
       const productCategory = await getProductCategoryByProductId(
         uniqueProductIds
       );
@@ -1270,7 +1269,9 @@ export const getRecomendationController = async (req, res, next) => {
       ];
       const uniqueProducts = [
         ...new Set(finalRecomededProducts.map((p) => JSON.stringify(p))),
-      ].map((str) => JSON.parse(str));
+      ]
+        .map((str) => JSON.parse(str))
+        .reverse();
 
       return responseClient({
         req,
