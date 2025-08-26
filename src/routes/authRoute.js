@@ -4,6 +4,8 @@ import {
   forgetPassword,
   getUser,
   getWishlistProducts,
+  googleAuthCallBackController,
+  googleAuthController,
   insertNewUser,
   loginUser,
   logoutUser,
@@ -24,8 +26,16 @@ router.get("/user-info", userAuthMiddleware, getUser);
 router.post("/forgot-password", forgetPassword);
 router.post("/reset-password", resetPassword);
 router.post("/logout", userAuthMiddleware, logoutUser);
+
 // router.post("/wishlist", userAuthMiddleware, addToWishlist);
 // router.delete("/wishlist/:productId", userAuthMiddleware, removeFromWishlist);
 router.post("/wishlist", userAuthMiddleware, toggleWishlistController);
 router.get("/wishlist", userAuthMiddleware, getWishlistProducts);
+
+// google auth start from here
+
+router.get("/google", googleAuthController);
+router.get("/google/callback", googleAuthCallBackController);
+
+// google auth ends from here
 export default router;

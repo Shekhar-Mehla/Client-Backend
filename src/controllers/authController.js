@@ -18,7 +18,7 @@ import {
 import { getJwts } from "../utils/jwt.js";
 import { userResetPasswordLinkEmailTemplate } from "../services/email/emailTemplate.js";
 import UserSchema from "../models/User/UserSchema.js";
-
+import axios from "axios";
 // Register(SignUp) of new user.
 export const insertNewUser = async (req, res, next) => {
   try {
@@ -380,5 +380,68 @@ export const getWishlistProducts = async (req, res) => {
       statusCode: 500,
       message: error.message || "Server error",
     });
+  }
+};
+
+export const googleAuthController = async (req, res, next) => {
+  try {
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=http://localhost:8001/api/v1/auth/google/callback&response_type=code&scope=openid%20profile%20email`;
+    res.redirect(url);
+  } catch (error) {
+    next(error);
+  }
+};
+export const googleAuthCallBackController = async (req, res, next) => {
+  try {
+    const { code } = req.query;
+    const { data } = await axios.post(`https://oauth2.googleapis.com/token`, {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: "http://localhost:8000/api/v1/auth/google/callback",
+      grant_type: "authorization_code",
+    });
+    const { id_token } = data;
+    const userInfo = JSON.parse(
+      Buffer.from(id_token.split(".")[1], "base64").toString()
+    );
+    console.log(userInfo);
+    const user = await findUserByGoogleId(userInfo.sub);
+
+    if (!user) {
+      const obj = {
+        providerId: userInfo.sub,
+        fName: userInfo.given_name,
+        lName: userInfo.family_name,
+        email: userInfo.email,
+        profilePicture: userInfo.picture,
+        emailVerified: userInfo.email_verified,
+      };
+      const newuser = await addNewUser(obj);
+      if (newuser?._id) {
+        const jwts = await generateJWTs(newuser?.email);
+
+        return responseClient({
+          res,
+          message: "you have loged in ",
+          payload: jwts,
+        });
+      } else {
+        return responseClient({
+          message: "could not create the user",
+          statusCode: 401,
+          res,
+        });
+      }
+    }
+    const jwts = await generateJWTs(user.email);
+
+    return responseClient({
+      res,
+      message: "you have loged in ",
+      payload: jwts,
+    });
+  } catch (error) {
+    next(error);
   }
 };
