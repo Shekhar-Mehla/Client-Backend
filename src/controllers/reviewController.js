@@ -9,51 +9,54 @@ import {
 export const postReviewController = async (req, res, next) => {
   try {
     const review = await postReview(req.body);
-    if (review?._id) {
-      // update the product review
 
+    if (review?._id) {
       const totalreview = await getReviewByProductId({
-        productId: review?.productId,
+        productId: review.productId,
       });
 
-      if (Array.isArray(totalreview)) {
-        const averageRating =
-          totalreview.reduce((acc, item) => acc + item.rating, 0) /
-          totalreview.length;
-        const rating = parseFloat(averageRating.toFixed(1));
-        const product = await updateProductsRating(
-          { _id: review.productId },
-          { reviews: rating }
-        );
-        if (!product?._id) {
-          throw new Error("could not update the product rating");
-        }
-      }
-    }
+      let rating = 0;
 
-    review?._id
-      ? responseClient({
-          req,
-          res,
-          message: "Thank you,your review has submitted succefully😊 ",
-        })
-      : responseClient({
-          req,
-          res,
-          statusCode: 400,
-          message:
-            "something went wrong, review could not be created.Try again later!",
-        });
+      if (Array.isArray(totalreview) && totalreview.length > 0) {
+        const totalRating = totalreview.reduce(
+          (acc, item) => acc + item.rating,
+          0
+        );
+        rating = parseFloat((totalRating / totalreview.length).toFixed(1));
+      }
+
+      const product = await updateProductsRating(
+        { _id: review.productId },
+        { reviews: rating }
+      );
+
+      if (!product?._id) {
+        throw new Error("Could not update the product rating");
+      }
+
+      responseClient({
+        req,
+        res,
+        message: "Thank you, your review has been submitted successfully 😊",
+      });
+    } else {
+      responseClient({
+        req,
+        res,
+        statusCode: 400,
+        message:
+          "Something went wrong, review could not be created. Try again later!",
+      });
+    }
   } catch (error) {
     next(error);
   }
 };
+
 export const getProductReviewController = async (req, res, next) => {
-  console.log(req.params);
-  console.log(req.params.productId);
   try {
     const productReviewList = await getReviewByProductId({
-      productId: req.params.productId,
+      productId: req.params?.productId,
       status: "approved",
     });
 

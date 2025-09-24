@@ -1,9 +1,11 @@
 import reviewCollection from "./ReviewsSchema.js";
+
 export const postReview = async (reviewObj) =>
   await reviewCollection(reviewObj).save();
 
 export const getReviewByProductId = async (obj) => {
-  return await reviewCollection.find(obj);
+  const reviews = await reviewCollection.find(obj);
+  return reviews;
 };
 
 export const updateReview = async (filter, update) =>
