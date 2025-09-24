@@ -30,6 +30,7 @@ export const userActivationDataValidation = (req, res, next) => {
   validateData({ req, res, next, obj });
 };
 export const loginDataValidation = (req, res, next) => {
+  console.log("va");
   const obj = {
     email: EMAIL_REQUIRED,
     password: PASSWORD_REQUIRED,
